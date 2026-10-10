@@ -49,7 +49,7 @@ def catalog_age_stats(movies: list, current_year: int = 2026) -> tuple:
             max_year = i['year']
     return current_year-min_year, current_year-max_year, math.ceil(current_year - (average_year / len(movies)))
 
-print(catalog_age_stats(movies))
+#print(catalog_age_stats(movies))
 
 """"Переводит минуты в формат"""
 
@@ -217,7 +217,14 @@ def genres_only_in_one(movies_a: dict, movies_b: dict) -> set:
 # Этап 8. Итераторы и генераторы
 
 def iter_high_rated(movies, min_rating=8.0):
-    pass
+    for movie in movies:
+        if movie.get('rating') >= min_rating:
+            yield movie
+
+for movie in iter_high_rated(movies):
+    print(format_report_line(movie))
+
+print(sum(m["duration_min"] for m in movies if m["rating"] > 7))
 
 # Этап 9. Итоговый отчет
 
