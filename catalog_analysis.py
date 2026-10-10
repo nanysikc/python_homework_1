@@ -227,13 +227,43 @@ r_dict = {movie.get('title'): movie.get('rating') for movie in movies if movie.g
 # Этап 7. Множества
 
 def all_genres(movies: list) -> set:
-    pass
+    genres_set = set()
+    for movie in movies:
+        genres = movie.get('genres') or []
+        for genre in genres:
+            genres_set.add(genre)
+    return genres_set
+
+#print(all_genres(movies))
 
 def common_actors(movie1: dict, movie2: dict) -> set:
-    pass
+    actors1 = movie1.get('actors') or []
+    actors2 = movie2.get('actors') or []
+
+    return set(actors1) & set(actors2)
+
+#print(common_actors(movies[0], movies[4]))
 
 def genres_only_in_one(movies_a: dict, movies_b: dict) -> set:
-    pass
+    genres_a = []
+    genres_b = []
+    if type(movies_a) == list:
+        for movie in movies_a:
+            for genre in movie.get('genres'):
+                genres_a.append(genre)
+
+    else:
+        genres_a = set(movies_a.get('genres'))
+
+    if type(movies_b) == list:
+        for movie in movies_b:
+            for genre in movie.get('genres'):
+                genres_b.append(genre)
+
+    else:
+        genres_b = set(movies_b.get('genres'))
+
+    return set(genres_a) - set(genres_b)
 
 #print(genres_only_in_one(movies[0], movies[3]))
 
