@@ -186,20 +186,43 @@ def top_n_by_rating(movies: list, n: int =3) -> tuple:
 """Возвращает словарь {жанр: количество фильмов}"""
 
 def count_by_genre(movies: list):
-    pass
-
-""""Возвращает словарь {актер: [список названий фильмов]}"""
-
-def actor_filmography(movies: list):
-    actors = []
     result = {}
 
     for movie in movies:
-        actors.extend(movies.get('actors'))
+        for genre in movie.get('genres'):
+            result[genre] = result.get(genre, 0) + 1
 
-    actors = set(actors)
+    return result
+
+# print(count_by_genre(movies))
+
+""""Возвращает словарь {актер: [список названий фильмов]}"""
+
+def actor_filmography(movies: list) -> dict:
+    result = {}
+
+    for movie in movies:
+        # Получаем список актёров из текущего фильма (словарь)
+        actors = movie.get('actors', [])
+        title = movie.get('title')
+
+        if not title:
+            continue  # если у фильма нет названия, пропускаем
+
+        for actor in actors:
+            # Если актёра ещё нет в словаре, создаём пустой список
+            if actor not in result:
+                result[actor] = []
+            result[actor].append(title)
+
+    return result
+
+#print(actor_filmography(movies))
 
 """Генератора словаря для фильмов с рейтингом выше среднего"""
+
+r_dict = {movie.get('title'): movie.get('rating') for movie in movies if movie.get('rating') > average_rating(movies)}
+#print(r_dict)
 
 # Этап 7. Множества
 
@@ -216,18 +239,18 @@ def genres_only_in_one(movies_a: dict, movies_b: dict) -> set:
 
 # Этап 8. Итераторы и генераторы
 
-def iter_high_rated(movies, min_rating=8.0):
+def iter_high_rated(movies: list, min_rating: float=8.0) -> iter:
     for movie in movies:
         if movie.get('rating') >= min_rating:
             yield movie
 
-for movie in iter_high_rated(movies):
-    print(format_report_line(movie))
+#for movie in iter_high_rated(movies):
+#    print(format_report_line(movie))
 
-print(sum(m["duration_min"] for m in movies if m["rating"] > 7))
+#print(sum(m["duration_min"] for m in movies if m["rating"] > 7))
 
 # Этап 9. Итоговый отчет
-
+"""
 def build_report(movies):
     print("ОТЧеТ ПО КАТАЛОГУ")
     print(f"Средний рейтинг: {average_rating(movies)}")
@@ -239,4 +262,4 @@ def build_report(movies):
             if i[0] in movie.values():
                 print("\t" + format_report_line(movie))
 
-    print("Фильмов по жанрам:")
+    print("Фильмов по жанрам:") """
