@@ -177,7 +177,7 @@ def top_n_by_rating(movies: list, n: int =3) -> tuple:
     result = []
     for key, value in sorted_pairs:
         result.append((key, value))
-    return result
+    return (result)
 
 #print(top_n_by_rating(movies))
 
@@ -280,8 +280,8 @@ def iter_high_rated(movies: list, min_rating: float=8.0) -> iter:
 #print(sum(m["duration_min"] for m in movies if m["rating"] > 7))
 
 # Этап 9. Итоговый отчет
-"""
-def build_report(movies):
+
+def build_report(movies: list) -> None:
     print("ОТЧеТ ПО КАТАЛОГУ")
     print(f"Средний рейтинг: {average_rating(movies)}")
     print(f"Средний возраст фильмов: {catalog_age_stats(movies, current_year=2026)[2]} лет \n")
@@ -291,5 +291,9 @@ def build_report(movies):
         for movie in movies:
             if i[0] in movie.values():
                 print("\t" + format_report_line(movie))
+    print("Фильмов по жанрам:")
+    for key, value in list(count_by_genre(movies).items()):
+        print(f"\t{key} - {value}")
+    print(f"Все жанры каталога: {", ".join(sorted(all_genres(movies)))}")
 
-    print("Фильмов по жанрам:") """
+build_report(movies)
