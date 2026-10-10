@@ -2,7 +2,8 @@ import math
 
 movies = [
     {"title": "The Dune Chronicles", "year": 2021, "genres": {"sci-fi", "drama"},
-     "rating": 8.6, "duration_min": 155, "actors": ["T. Chalamet", "R. Ferguson", "O. Isaac"]},
+     "rating": 8.6, "duration_min": 155, "actors":
+       ["T. Chalamet", "R. Ferguson", "O. Isaac"]},
     {"title": "Kitchen Stories", "year": 2019, "genres": {"comedy", "drama"},
      "rating": 7.1, "duration_min": 98, "actors": ["A. Novak", "M. Ferguson"]},
     {"title": "silent hours", "year": 2016, "genres": {"thriller", "drama"},
@@ -47,7 +48,9 @@ def catalog_age_stats(movies: list, current_year: int = 2026) -> tuple:
             min_year = i['year']
         if i['year'] > max_year:
             max_year = i['year']
-    return current_year-min_year, current_year-max_year, math.ceil(current_year - (average_year / len(movies)))
+    avg_age_offset = math.ceil(current_year - (average_year / len(movies)))
+    return current_year - min_year, current_year - max_year, avg_age_offset
+
 
 #print(catalog_age_stats(movies))
 
@@ -145,7 +148,18 @@ def make_slug(title: str) -> str:
 """Возвращающает единую строку с описанием фильма"""
 
 def format_report_line(movie: dict) -> str:
-    return f'"{movie.get('title')}" ({movie.get('year')}) - {movie.get('rating')}/10, {duration_in_hours(movie.get("duration_min"))}, жанры: {", ".join(sorted(movie.get('genres')))}'
+
+    title = movie.get("title", "Без названия")
+    year = movie.get("year", "?")
+    rating = movie.get("rating", 0)
+    duration = duration_in_hours(movie.get("duration_min"))
+    genres = ", ".join(sorted(movie.get("genres", [])))
+
+    # Собираем строку по частям
+    return (
+        f'"{title}" ({year}) - {rating}/10, '
+        f"{duration}, жанры: {genres}"
+    )
 
 #print(format_report_line(movies[0]))
 
@@ -158,7 +172,13 @@ def titles_sorted_by_rating(movies: list) -> list:
     for movie in movies:
         movies_dict[str(movie.get('title'))] = float(movie.get('rating'))
 
-    movies_dict = dict(sorted(movies_dict.items(),key=lambda item: item[1], reverse=True))
+    movies_dict = dict(
+    sorted(
+        movies_dict.items(),
+        key=lambda item: item[1],
+        reverse=True,
+    )
+)
     keys_list = list(movies_dict.keys()) 
 
     return keys_list
@@ -172,7 +192,11 @@ def top_n_by_rating(movies: list, n: int =3) -> tuple:
     for movie in movies:
         movies_dict[str(movie.get('title'))] = float(movie.get('rating'))
 
-    sorted_pairs = sorted(movies_dict.items(),key=lambda item: item[1], reverse=True)[:n]
+    sorted_pairs = sorted(
+    movies_dict.items(),
+    key=lambda item: item[1],
+    reverse=True,)[:n]
+
 
     result = []
     for key, value in sorted_pairs:
@@ -221,7 +245,12 @@ def actor_filmography(movies: list) -> dict:
 
 """Генератора словаря для фильмов с рейтингом выше среднего"""
 
-r_dict = {movie.get('title'): movie.get('rating') for movie in movies if movie.get('rating') > average_rating(movies)}
+r_dict = {
+    movie.get("title"): movie.get("rating")
+    for movie in movies
+    if movie.get("rating") > average_rating(movies)
+}
+
 #print(r_dict)
 
 # Этап 7. Множества
@@ -247,7 +276,7 @@ def common_actors(movie1: dict, movie2: dict) -> set:
 def genres_only_in_one(movies_a: dict, movies_b: dict) -> set:
     genres_a = []
     genres_b = []
-    if type(movies_a) == list:
+    if isinstance(movies_a, list):
         for movie in movies_a:
             for genre in movie.get('genres'):
                 genres_a.append(genre)
@@ -255,7 +284,7 @@ def genres_only_in_one(movies_a: dict, movies_b: dict) -> set:
     else:
         genres_a = set(movies_a.get('genres'))
 
-    if type(movies_b) == list:
+    if isinstance(movies_b, list):
         for movie in movies_b:
             for genre in movie.get('genres'):
                 genres_b.append(genre)
@@ -284,16 +313,23 @@ def iter_high_rated(movies: list, min_rating: float=8.0) -> iter:
 def build_report(movies: list) -> None:
     print("ОТЧеТ ПО КАТАЛОГУ")
     print(f"Средний рейтинг: {average_rating(movies)}")
-    print(f"Средний возраст фильмов: {catalog_age_stats(movies, current_year=2026)[2]} лет \n")
+    age_stat = catalog_age_stats(movies, current_year=2026)[2]
+    print(f"Средний возраст фильмов: {age_stat} лет\n")
+
     print("Топ-3 фильма:")
 
     for i in top_n_by_rating(movies):
         for movie in movies:
             if i[0] in movie.values():
                 print("\t" + format_report_line(movie))
+
+    print()
     print("Фильмов по жанрам:")
     for key, value in list(count_by_genre(movies).items()):
         print(f"\t{key} - {value}")
+
+    print()
     print(f"Все жанры каталога: {", ".join(sorted(all_genres(movies)))}")
+    print()
 
 build_report(movies)
